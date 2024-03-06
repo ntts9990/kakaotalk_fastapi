@@ -3,7 +3,7 @@ from typing import List
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-import streamlit as st
+import streamlit_app as st
 
 app = FastAPI()
 

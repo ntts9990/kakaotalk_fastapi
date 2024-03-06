@@ -20,7 +20,7 @@ async def get_news(keyword: str = ""):
     newslist = soup.select(".rankingnews_list")
 
     # 뉴스 데이터를 저장할 리스트
-    newsData = []
+    news_data = []
 
     # 언론사마다
     for news in newslist[:12]:
@@ -49,14 +49,14 @@ async def get_news(keyword: str = ""):
                 news_img = None
 
             # 저장
-            newsData.append({
+            news_data.append({
                 "ranking": news_ranking,
                 "title": news_title,
                 "link": news_link,
                 "img": news_img
             })
 
-    for news in newsData:
+    for news in news_data:
         news_url = news['link']
         res = requests.get(news_url, headers=headers)
         soup = BeautifulSoup(res.text, 'lxml')
@@ -67,9 +67,9 @@ async def get_news(keyword: str = ""):
         news['contents'] = news_content
 
     if keyword:
-        filtered_newsData = [news for news in newsData if keyword.lower() in news['title'].lower()]
+        filtered_newsData = [news for news in news_data if keyword.lower() in news['title'].lower()]
     else:
-        filtered_newsData = newsData
+        filtered_newsData = news_data
 
 
     file = pd.DataFrame(filtered_newsData)
