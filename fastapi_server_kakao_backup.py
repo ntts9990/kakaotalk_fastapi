@@ -1,22 +1,19 @@
 from fastapi import FastAPI, HTTPException
-from typing import List, Optional
+from typing import List
 import httpx
 from bs4 import BeautifulSoup
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 class NewsData(BaseModel):
     ranking: str
     title: str
     link: str
-    img: Optional[str] = None
-    time: Optional[str] = None
-    contents: Optional[str] = None
+    img: str = None
+    time: str = None
+    contents: str = None
 
-class ComplexRequestModel(BaseModel):
-    action: dict = Field(..., example={"params": {"keyword": "sample"}})
-
-    def get_keyword(self) -> str:
-        return self.action.get("params", {}).get("keyword", "")
+class KeywordModel(BaseModel):
+    keyword: str = ""
 
 app = FastAPI()
 
@@ -58,9 +55,9 @@ async def fetch_news_data(url: str, keyword: str) -> List[NewsData]:
                 )
     return news_data
 
-@app.post("/filtered-news", response_model=List[NewsData])
-async def read_filtered_news(request_body: ComplexRequestModel):
-    keyword = request_body.get_keyword().lower()
+@app.post("/news", response_model=List[NewsData])
+async def read_news(request_body: KeywordModel):
+    keyword = request_body.keyword.lower()
     try:
         news_data = await fetch_news_data("https://news.naver.com/main/ranking/popularMemo.naver", keyword)
         return news_data

@@ -1,12 +1,16 @@
 import streamlit as st
 import requests
 
-# FastAPI 서버 URL
-FASTAPI_SERVER_URL = "http://127.0.0.1:8000/news"
+# FastAPI 서버 URL 수정
+FASTAPI_SERVER_URL = "http://127.0.0.1:8000/filtered-news"
 
 def get_news_from_server(keyword):
     # POST 요청으로 변경, JSON 데이터 포함
-    response = requests.post(FASTAPI_SERVER_URL, json={"keyword": keyword})
+    # ComplexRequestModel에 맞는 데이터 형태로 수정
+    response = requests.post(
+        FASTAPI_SERVER_URL,
+        json={"action": {"params": {"keyword": keyword}}}
+    )
     if response.status_code == 200:
         return response.json()
     else:
@@ -25,7 +29,6 @@ def main():
                 with st.container():
                     st.write(f"제목: {news_item['title']}")
                     st.write(f"링크: {news_item['link']}")
-                    # st.write(f"이미지: {news_item['img']}") # 이미지 URL
                     if news_item['img']:  # 이미지 URL이 있는 경우에만 렌더링
                         st.image(news_item['img'], caption="뉴스 이미지")
                     st.write(f"시간: {news_item['time']}")
