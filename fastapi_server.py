@@ -1,8 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from typing import List
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+from pydantic import BaseModel
+
+class KeywordModel(BaseModel):
+    keyword: str = ""
 
 
 app = FastAPI()
@@ -77,9 +81,9 @@ async def get_news(keyword: str = ""):
     return file
 
 
-@app.get("/news", response_model=List[dict])
-async def read_news(keyword: str = ""):
-    news_df = await get_news(keyword)
+@app.post("/news", response_model=List[dict])
+async def read_news(request_body: KeywordModel):
+    news_df = await get_news(request_body.keyword)
     return news_df.to_dict('records')
 
 
