@@ -15,10 +15,10 @@ class NewsData(BaseModel):
     contents: Optional[str] = None
 
 class ComplexRequestModel(BaseModel):
-    action: dict = Field(..., example={"params": {"keyword": "sample"}})
+    action: dict = Field(..., example={"userRequest": {"utterance": "sample"}})
 
     def get_keyword(self) -> str:
-        return self.action.get("params", {}).get("keyword", "")
+        return self.action.get("userRequest", {}).get("utterance", "")
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36"
