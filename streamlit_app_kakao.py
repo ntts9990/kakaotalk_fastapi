@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # FastAPI 서버 URL 수정
-FASTAPI_SERVER_URL = "http://127.0.0.1:8000/filtered-news"
+FASTAPI_SERVER_URL = "http://52.78.53.227:8000/filtered-news"
 
 def get_news_from_server(keyword):
     # POST 요청으로 변경, JSON 데이터 포함

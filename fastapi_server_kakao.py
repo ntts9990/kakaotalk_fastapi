@@ -4,6 +4,8 @@ import httpx
 from bs4 import BeautifulSoup
 from pydantic import BaseModel, Field
 
+app = FastAPI()
+
 class NewsData(BaseModel):
     ranking: str
     title: str
@@ -17,8 +19,6 @@ class ComplexRequestModel(BaseModel):
 
     def get_keyword(self) -> str:
         return self.action.get("params", {}).get("keyword", "")
-
-app = FastAPI()
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36"
@@ -58,15 +58,27 @@ async def fetch_news_data(url: str, keyword: str) -> List[NewsData]:
                 )
     return news_data
 
-@app.post("/filtered-news", response_model=List[NewsData])
+@app.post("/filtered-news")
 async def read_filtered_news(request_body: ComplexRequestModel):
     keyword = request_body.get_keyword().lower()
     try:
         news_data = await fetch_news_data("https://news.naver.com/main/ranking/popularMemo.naver", keyword)
-        return news_data
+        response_body = {
+            "version": "2.0",
+            "template": {
+                "outputs": [
+                    {
+                        "simpleText": {
+                            "text": str(news_data) # This is a simplification, consider formatting this properly
+                        }
+                    }
+                ]
+            }
+        }
+        return response_body
     except Exception as e:
         raise HTTPException(status_code=500, detail="An error occurred while fetching the news.")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
